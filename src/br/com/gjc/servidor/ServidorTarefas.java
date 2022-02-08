@@ -8,9 +8,14 @@ public class ServidorTarefas {
         System.out.println("<--- Iniciando servidor --->");
         ServerSocket servidor = new ServerSocket(4343);
 
-        while(true){
+        while (true) {
             Socket socket = servidor.accept();
             System.out.println("Aceitando novo cliente na porta: " + socket.getPort());
+
+            DistribuirTarefas distribuirTarefas = new DistribuirTarefas(socket);
+            Thread threadCliente = new Thread(distribuirTarefas);
+            threadCliente.start();
+
         }
 
     }
