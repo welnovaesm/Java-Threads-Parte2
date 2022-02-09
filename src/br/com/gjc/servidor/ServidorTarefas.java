@@ -22,18 +22,16 @@ public class ServidorTarefas {
     public ServidorTarefas() throws IOException {
         System.out.println("<--- Iniciando servidor --->");
         this.servidor = new ServerSocket(4343);
-        ExecutorService threadPool = Executors.newCachedThreadPool();
+        this.threadPool = Executors.newFixedThreadPool(4, new FabricaDeThreads());
         this.estaRodando = new AtomicBoolean(true);
     }
 
     private void rodar() throws IOException {
-
         while (this.estaRodando.get()) {
             try {
                 Socket socket = servidor.accept();
                 System.out.println("Aceitando novo cliente na porta: " + socket.getPort());
-
-                DistribuirTarefas distribuirTarefas = new DistribuirTarefas(socket, this);
+                DistribuirTarefas distribuirTarefas = new DistribuirTarefas(threadPool, socket, this);
                 this.threadPool.execute(distribuirTarefas);
             } catch (IOException e) {
                 System.out.println("SocketException, está rodando? " + this.estaRodando);
